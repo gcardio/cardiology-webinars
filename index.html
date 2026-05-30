@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cardiology Webinars Tracker</title>
+<style>
+  :root{
+    --bg:#f4f7fb; --card:#ffffff; --ink:#1b2330; --muted:#5d6878;
+    --line:#e1e7f0; --accent:#2563eb; --accent2:#0b8a5f; --chip:#eef2f8; --warn:#c08a1e; --gold:#b07d12;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.45;-webkit-font-smoothing:antialiased}
+  header{padding:28px 22px 6px;max-width:1100px;margin:0 auto}
+  h1{margin:0 0 4px;font-size:26px;letter-spacing:.2px;color:#0f1726}
+  .sub{color:var(--muted);font-size:14px;margin:0}
+  .refresh{color:var(--accent2);font-size:12.5px;margin:6px 0 0;font-weight:600}
+  .note{max-width:1100px;margin:14px auto 0;padding:12px 16px;background:#fff8e8;
+    border:1px solid #f0e3c2;border-left:3px solid var(--warn);border-radius:8px;
+    color:#5a5236;font-size:13px}
+  .wrap{max-width:1100px;margin:0 auto;padding:18px 22px 60px}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:18px 0 4px}
+  .tbtn{cursor:pointer;border:1px solid var(--line);background:var(--chip);color:var(--ink);
+    padding:8px 14px;border-radius:9px;font-size:13px;font-weight:600;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+  .tbtn:hover{border-color:var(--accent)}
+  .tbtn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .tbtn.primary:hover{background:#1d4ed8}
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 18px}
+  .filters button{cursor:pointer;border:1px solid var(--line);background:var(--chip);
+    color:var(--ink);padding:7px 13px;border-radius:999px;font-size:13px;transition:.15s;white-space:nowrap}
+  .filters button:hover{border-color:var(--accent)}
+  .filters button.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .filters button.mine{border-color:var(--gold);color:var(--gold)}
+  .filters button.mine.active{background:var(--gold);border-color:var(--gold);color:#fff}
+  .filters button.soon{border-color:var(--accent2);color:var(--accent2)}
+  .filters button.soon.active{background:var(--accent2);border-color:var(--accent2);color:#fff}
+  .count{color:var(--muted);font-size:13px;margin:0 0 14px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px}
+  .card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:18px 18px 16px;display:flex;flex-direction:column;gap:9px;transition:.15s;
+    box-shadow:0 1px 2px rgba(20,30,50,.05)}
+  .card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 6px 18px rgba(37,99,235,.10)}
+  .card.saved{border-color:var(--gold)}
+  .star{position:absolute;top:12px;right:12px;cursor:pointer;background:transparent;border:none;
+    font-size:20px;line-height:1;color:var(--gold);padding:2px 4px;border-radius:6px}
+  .star:hover{background:#eef2f8}
+  .star.del{color:#d9534f;font-size:15px;font-weight:700}
+  .topic-tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--accent2);padding-right:28px}
+  .card h3{margin:0;font-size:16px;line-height:1.3;padding-right:28px;color:#10192a}
+  .host{color:var(--muted);font-size:13px;margin:0}
+  .desc{font-size:13px;color:#445064;margin:2px 0 0}
+  .dates{margin:2px 0 0;padding:10px 12px;background:#f3f7fc;border:1px solid #e1e7f0;border-radius:9px}
+  .dates .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--accent);font-weight:700;margin-bottom:6px}
+  .dates ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px}
+  .dates li{font-size:13px;color:#1b2330;display:flex;gap:7px;align-items:baseline;flex-wrap:wrap}
+  .dates li .dot{color:var(--accent2);font-size:11px}
+  .dates li.next .sess{font-weight:700}
+  .dates li .tag{font-size:10px;background:var(--accent);color:#fff;padding:1px 6px;border-radius:6px;margin-left:6px}
+  .cal{display:inline-flex;gap:6px;margin-left:2px}
+  .calbtn{font-size:11px;font-weight:600;color:var(--accent);background:#eef3fb;border:1px solid #d4deec;
+    border-radius:6px;padding:2px 7px;cursor:pointer;text-decoration:none;line-height:1.5}
+  .calbtn:hover{border-color:var(--accent);background:#e3ecfb}
+  .rolling{margin:2px 0 0;padding:9px 12px;background:#f3f7fc;border:1px dashed #cfd9e8;border-radius:9px;
+    font-size:13px;color:#445064}
+  .rolling b{color:#1b2330}
+  .badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+  .badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;letter-spacing:.3px}
+  .b-free{background:#e6f7f0;color:#0c7a52;border:1px solid #c5e9d8}
+  .b-online{background:#e7f0ff;color:#1d4ed8;border:1px solid #c9dcfb}
+  .b-dated{background:#fbf1d8;color:#946811;border:1px solid #efdca6}
+  .b-ondemand{background:#e9f6ef;color:#14794f;border:1px solid #cbead9}
+  .b-custom{background:#fde9e9;color:#b3261e;border:1px solid #f5c9c6}
+  .b-verify{background:#fdebcd;color:#9a5b00;border:1px solid #f3d199}
+  .card.unverified{border-color:#f0c987}
+  .access{font-size:12.5px;color:var(--muted);margin:0}
+  .spacer{flex:1}
+  .reg{display:inline-flex;align-items:center;justify-content:center;gap:7px;margin-top:6px;
+    background:var(--accent);color:#fff;text-decoration:none;padding:9px 14px;border-radius:9px;
+    font-size:13px;font-weight:600;transition:.15s}
+  .reg:hover{background:#1d4ed8}
+  footer{max-width:1100px;margin:0 auto;padding:0 22px 40px;color:var(--muted);font-size:12px}
+  .empty{color:var(--muted);padding:18px 0}
+  .sec{margin-top:6px}
+  .sec-h{font-size:15px;font-weight:700;color:#10192a;margin:24px 0 12px;padding-bottom:8px;
+    border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:8px}
+  .sec-n{font-size:13px;color:var(--muted);font-weight:600}
+  /* modal */
+  .modal{position:fixed;inset:0;background:rgba(20,28,45,.45);display:flex;align-items:center;
+    justify-content:center;padding:20px;z-index:50}
+  .modal[hidden]{display:none}
+  .modal-card{background:#ffffff;border:1px solid var(--line);border-radius:14px;padding:22px;
+    width:min(460px,100%);max-height:90vh;overflow:auto;display:flex;flex-direction:column;gap:12px;
+    box-shadow:0 18px 50px rgba(20,30,50,.22)}
+  .modal-card h3{margin:0 0 2px;font-size:18px;color:#10192a}
+  .modal-card label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--muted)}
+  .modal-card input,.modal-card select,.modal-card textarea{background:#f6f8fc;border:1px solid var(--line);
+    color:var(--ink);border-radius:8px;padding:8px 10px;font-size:14px;font-family:inherit}
+  .modal-card input:focus,.modal-card select:focus,.modal-card textarea:focus{outline:none;border-color:var(--accent)}
+  .row{display:flex;gap:10px}
+  .row label{flex:1}
+  .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:4px}
+  .hint{font-size:11.5px;color:var(--muted);margin:-4px 0 0}
+</style>
+</head>
+<body>
+<header>
+  <h1>Cardiology Webinars Tracker</h1>
+  <p class="sub">Free, online, upcoming cardiology education in your interest areas</p>
+  <p class="refresh" id="refresh"></p>
+</header>
+
+<div class="note">
+  <strong>New:</strong> tap the <span style="color:var(--gold)">★</span> on any card to save it to <em>My Dashboard</em>,
+  use <em>+ Add event</em> to add your own, and use the <em>＋Google</em> / <em>＋iCal</em> buttons on a dated session to drop it
+  into your calendar. <strong>DATED</strong> cards have confirmed upcoming dates; <strong>ON-DEMAND</strong> cards you can watch
+  anytime. Your saved &amp; added events live in this browser on this device &mdash; use <em>Export</em> to share your set with a
+  colleague. Tip: open this file in Chrome/Safari so the register links open in a new tab. The curated list auto-refreshes weekly.
+</div>
+
+<div class="wrap">
+  <div class="toolbar">
+    <button class="tbtn primary" id="addBtn">＋ Add event</button>
+    <button class="tbtn" id="exportBtn">⬇ Export my dashboard</button>
+    <label class="tbtn" for="importInput">⬆ Import<input id="importInput" type="file" accept="application/json" hidden></label>
+  </div>
+  <div class="filters" id="filters"></div>
+  <p class="count" id="count"></p>
+
+  <section class="sec">
+    <h2 class="sec-h">Upcoming live sessions <span class="sec-n" id="liveCount"></span></h2>
+    <div class="grid" id="gridLive"></div>
+    <p class="empty" id="liveEmpty" style="display:none">No upcoming live sessions for this filter &mdash; try another, or use <strong>＋ Add event</strong>.</p>
+  </section>
+
+  <section class="sec">
+    <h2 class="sec-h">On-demand / pre-recorded <span class="sec-n" id="odCount"></span></h2>
+    <div class="grid" id="gridOd"></div>
+    <p class="empty" id="odEmpty" style="display:none">No on-demand items for this filter.</p>
+  </section>
+</div>
+
+<footer>
+  Personal tracker, auto-refreshed weekly. Sources: ICOS, SCCT, ASPC, ACC, ASE, ESC, SCMR, National Lipid Association,
+  Radcliffe Cardiology. Times shown in US Pacific. Verify each event on its register page.
+</footer>
+
+<div class="modal" id="modal" hidden>
+  <form class="modal-card" id="evForm">
+    <h3>Add an event</h3>
+    <label>Title *<input name="title" required placeholder="e.g. Strain imaging masterclass"></label>
+    <label>Host / organizer<input name="host" placeholder="e.g. My institution"></label>
+    <label>Topic
+      <select name="topic" id="topicSelect"></select>
+    </label>
+    <div class="row">
+      <label>Date *<input name="date" type="date" required></label>
+      <label>Time (PT)<input name="time" type="time"></label>
+    </div>
+    <p class="hint">Leave time blank for an all-day entry.</p>
+    <label>Registration link<input name="url" type="url" placeholder="https://"></label>
+    <label>Notes<textarea name="desc" rows="2" placeholder="Optional"></textarea></label>
+    <div class="modal-actions">
+      <button type="button" class="tbtn" id="cancelBtn">Cancel</button>
+      <button type="submit" class="tbtn primary">Add to My Dashboard</button>
+    </div>
+  </form>
+</div>
+
+<script>
+// ===== Auto-refreshed data block (the weekly task rewrites EVENTS + LAST_UPDATED) =====
+const LAST_UPDATED = "May 30, 2026";  // refreshed
+
+const TOPICS = [
+  {key:"all",question:"All topics"},
+  {key:"echo",label:"Echo"},
+  {key:"structural",label:"Structural echo"},
+  {key:"ct",label:"Cardiac CT"},
+  {key:"mri",label:"Cardiac MRI"},
+  {key:"prevention",label:"Prevention"},
+  {key:"cardioonc",label:"Cardio-oncology"},
+  {key:"ai",label:"AI in cardiology"},
+  {key:"earlycareer",label:"Early career"},
+  {key:"general",label:"General cardiology"}
+].map(t=>({key:t.key,label:t.label||t.question}));
+
+const TOPIC_LABEL = Object.fromEntries(TOPICS.map(t=>[t.key,t.label]));
+
+// Each event has EITHER dates:[...] (confirmed upcoming sessions, soonest first)
+// OR ondemand:"..." (watch-anytime resource). No vague "rolling" placeholders.
+const EVENTS = [
+  {
+    topic:"echo",
+    title:"ASE Journal Club on X — June",
+    host:"American Society of Echocardiography (ASE)",
+    desc:"Live JASE journal-club discussion of new echo literature — TTE, Doppler, strain, contrast, diastology — held on X (@ASE360).",
+    dates:["Tue Jun 2, 2026 · 5:00 PM PT"],
+    access:"Free, open (on X @ASE360)",
+    url:"https://www.asecho.org/event/ase-journal-club-echocardiographic/"
+  },
+  {
+    topic:"earlycareer",
+    title:"ASE / EACVI Webinar — Breaking the Echo Ceiling",
+    host:"American Society of Echocardiography (ASE) with EACVI",
+    desc:"Promoting professional empowerment in echocardiography; developed with EACVI. Free — confirmed on the ASE Learning Hub.",
+    dates:["Fri Jun 12, 2026 · 12:00 PM PT"],
+    access:"Free",
+    url:"https://aselearninghub.org/topclass/topclass.do?expand-OfferingDetails-Offeringid=22312290"
+  },
+  {
+    topic:"echo",
+    title:"ASE Guidelines in Practice — Ultrasound Artifacts",
+    host:"American Society of Echocardiography (ASE)",
+    desc:"Webinar on ASE's new cardiac ultrasound artifacts guideline (1 CME, Lantheus-supported). Date confirmed on the ASE event page; price isn't shown there and the Learning Hub sign-up page won't render — so the price is unconfirmed (not assumed free).",
+    dates:["Tue Jul 14, 2026 · 3:00 PM PT"],
+    access:"Price not confirmed — verify $0 at ASE sign-up",
+    verify:true,
+    url:"https://aselearninghub.org/topclass/topclass.do?expand-OfferingDetails-Offeringid=21689619"
+  },
+  {
+    topic:"ct",
+    title:"ESC Webinar — Imaging Subclinical Coronary Atherosclerosis & Lipid-Lowering",
+    host:"European Society of Cardiology (ESC)",
+    desc:"Imaging subclinical coronary atherosclerosis (coronary CT) and its implications for intensive lipid-lowering therapy.",
+    dates:["Tue Jun 9, 2026 · 9:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"structural",
+    title:"ESC / EACVI Webinar — Tricuspid Regurgitation: Diagnosis to Transcatheter Treatment",
+    host:"European Society of Cardiology (EACVI)",
+    desc:"Imaging-based diagnosis through transcatheter treatment of tricuspid regurgitation, in light of the 2025 ESC Valvular Heart Disease guidelines.",
+    dates:["Wed Jun 10, 2026 · 9:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"prevention",
+    title:"ESC Webinar — Prediction & Prevention of Diabetes CV Complications",
+    host:"European Society of Cardiology (ESC)",
+    desc:"What's new in predicting and preventing cardiovascular complications in diabetes.",
+    dates:["Thu Jun 18, 2026 · 7:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"prevention",
+    title:"Familial Hypercholesterolemia & Early CVD Prevention",
+    host:"American Society for Preventive Cardiology (ASPC)",
+    desc:"ASPC live webinar on identifying and managing familial hypercholesterolemia to prevent early CVD.",
+    dates:["Tue Jun 23, 2026 · 3:00 PM PT"],
+    access:"Free, registration",
+    url:"https://www.aspconline.org/events-center"
+  },
+  {
+    topic:"prevention",
+    title:"ESC Webinar — Cardio-Rheumatology: An Unmet Need in CVD Prevention",
+    host:"European Society of Cardiology (ESC)",
+    desc:"Why cardio-rheumatology matters for cardiovascular risk and prevention in patients with inflammatory rheumatic disease.",
+    dates:["Wed Jun 24, 2026 · 9:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"prevention",
+    title:"ESC Webinar — Lipid-Lowering in ASCVD",
+    host:"European Society of Cardiology (ESC)",
+    desc:"Lipid-lowering treatment in ASCVD with and without prior ischaemic events; emerging evidence and ongoing trials.",
+    dates:["Tue Sep 15, 2026 · 9:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"general",
+    title:"ESC/ACVC — BEYOND ROSC: Mastering Post-Cardiac Arrest Care (Ep 3)",
+    host:"European Society of Cardiology (ACVC)",
+    desc:"Acute cardiovascular care series on post-cardiac-arrest management.",
+    dates:["Mon Jun 1, 2026 · time TBA"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"general",
+    title:"ESC/HFA — Early Identification of Heart Failure in Diabetic Populations",
+    host:"European Society of Cardiology (HFA)",
+    desc:"Detecting heart failure early in patients with diabetes.",
+    dates:["Tue Jun 2, 2026 · 9:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"general",
+    title:"ESC/EAPCI Journal Club — STORM-PE",
+    host:"European Society of Cardiology (EAPCI)",
+    desc:"Journal club on the STORM-PE trial (pulmonary embolism intervention).",
+    dates:["Thu Jun 4, 2026 · 9:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"general",
+    title:"ESC/EAPCI — From Trials to Guidelines in Structural Heart Disease",
+    host:"European Society of Cardiology (EAPCI)",
+    desc:"Translating structural heart disease evidence into daily practice and managing capacity.",
+    dates:["Fri Jun 5, 2026 · 9:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"general",
+    title:"ESC/EAPCI — Valvular Heart Disease: Life-Time Management",
+    host:"European Society of Cardiology (EAPCI)",
+    desc:"Balancing durability and repeat intervention in valvular heart disease.",
+    dates:["Tue Jun 16, 2026 · 9:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"general",
+    title:"ESC — What Is Cardio-Rheumatology?",
+    host:"European Society of Cardiology (ESC)",
+    desc:"Introduction to cardio-rheumatology and CV risk in inflammatory disease.",
+    dates:["Wed Jun 17, 2026 · 9:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"general",
+    title:"ESC/HFA Journal Club — HF Hospitalisation as an Endpoint",
+    host:"European Society of Cardiology (HFA)",
+    desc:"Is heart-failure hospitalisation the right trial endpoint?",
+    dates:["Thu Jun 18, 2026 · 9:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"general",
+    title:"ESC — New Levels of Evidence for ESC Guidelines",
+    host:"European Society of Cardiology (ESC)",
+    desc:"What changed in ESC guideline levels of evidence and why it matters.",
+    dates:["Fri Jun 19, 2026 · 9:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"general",
+    title:"ESC/EHRA — Surgical LAA Exclusion in AF",
+    host:"European Society of Cardiology (EHRA)",
+    desc:"Guideline-supported left atrial appendage exclusion for AF patients.",
+    dates:["Tue Jun 23, 2026 · 9:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"earlycareer",
+    title:"ESC/ACNAP — Conducting Literature Reviews",
+    host:"European Society of Cardiology (ACNAP)",
+    desc:"Research-skills webinar on conducting literature reviews.",
+    dates:["Wed Jun 24, 2026 · 7:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"general",
+    title:"ESC/EAPCI — Early Access to Innovation in Structural Heart Disease",
+    host:"European Society of Cardiology (EAPCI)",
+    desc:"Delivering early patient access to structural heart disease innovation.",
+    dates:["Wed Jul 1, 2026 · 9:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"general",
+    title:"ESC — 2024 ESC Guidelines on AF: AF-CARE Pathway",
+    host:"European Society of Cardiology (ESC)",
+    desc:"The AF-CARE pathway — the new paradigm for atrial fibrillation treatment.",
+    dates:["Wed Jul 22, 2026 · 9:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"general",
+    title:"ESC — Anticoagulation in AF: Implementing the 2024 Guidelines",
+    host:"European Society of Cardiology (ESC)",
+    desc:"Putting the 2024 ESC AF anticoagulation guidance into clinical practice.",
+    dates:["Wed Jul 29, 2026 · 9:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"structural",
+    title:"Tricuspid TEER — Anatomy-Driven Planning & Execution",
+    host:"Radcliffe Cardiology (Structural Heart Academy APAC)",
+    desc:"Echo-guided tricuspid TEER: tricuspid valve anatomy, multimodality imaging (TEE/ICE/CT) for planning and intraprocedural guidance, real-world cases. APAC-timed broadcast (18:00 JST). Confirmed live on the Radcliffe webinar page.",
+    dates:["Wed Jun 10, 2026 · 2:00 AM PT (18:00 JST)"],
+    access:"Free with registration (sponsored)",
+    url:"https://www.radcliffecardiology.com/webinars/tricuspid-teer-anatomy-driven-planning-and-execution"
+  },
+  {
+    topic:"ct",
+    title:"SCCT Webinar — Scaling Cardiac CT",
+    host:"Society of Cardiovascular Computed Tomography (SCCT)",
+    desc:"Sponsored webinar — building a high-volume cardiac CT service without losing quality. Date confirmed (June 17, 2026); the SCCT event page is JS-rendered, so confirm the start time there.",
+    dates:["Wed Jun 17, 2026 · time TBA"],
+    access:"Free sponsored webinar (time on SCCT page)",
+    url:"https://scct.org/events/EventDetails.aspx?id=2060472"
+  },
+  {
+    topic:"general",
+    title:"NEW — ESC/ACNAP — From Heart to Mind: PPI in Preventing Cognitive Impairment in CVD",
+    host:"European Society of Cardiology (ACNAP)",
+    desc:"How public and patient involvement (PPI) supports research to prevent cognitive impairment in cardiovascular disease. Listed on the ESC365 upcoming-webinars page (Mon 8 Jun 2026, 15:00 CEST).",
+    dates:["Mon Jun 8, 2026 · 6:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"general",
+    title:"NEW — Optimising Cath Lab Management to Scale TAVI",
+    host:"Radcliffe Cardiology",
+    desc:"Live webinar (Edwards-supported) on cath-lab efficiency, workflow design, patient prioritisation and scheduling to scale TAVI. Date confirmed on the Radcliffe webinar page; the page lists both 18:00 CET and 18:00 BST, so the exact start time should be confirmed.",
+    dates:["Tue Jun 9, 2026 · 10:00 AM PT (18:00 BST)"],
+    access:"Free with registration (sponsored)",
+    verify:true,
+    url:"https://www.radcliffecardiology.com/webinars/optimising-cath-lab-management-scale-tavi"
+  },
+  {
+    topic:"prevention",
+    title:"NEW — ASPC Women's Cardiovascular Health Virtual Symposium",
+    host:"American Society for Preventive Cardiology (ASPC)",
+    desc:"Half-day virtual symposium on women's cardiovascular health (10:00 AM–2:00 PM EDT). Date confirmed on the ASPC events page (\"details coming soon\"); registration/price not yet posted, so $0 is not yet confirmed.",
+    dates:["Sat Sep 12, 2026 · 7:00 AM PT"],
+    access:"Free? — confirm $0 at ASPC",
+    verify:true,
+    url:"https://www.aspconline.org/events-center"
+  },
+  {
+    topic:"general",
+    title:"NEW — ESC Webinar — Amyloidosis: From Protein Misfolding to Therapy in ATTR",
+    host:"European Society of Cardiology (ESC)",
+    desc:"ESC amyloidosis series — stabilizers, silencers, antibodies and gene editing in ATTR. Listed on the ESC365 upcoming-webinars page (Mon 7 Sep 2026, 18:00 CEST).",
+    dates:["Mon Sep 7, 2026 · 9:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"general",
+    title:"NEW — ESC Webinar — New ESC Guidelines on Cardiac Rehabilitation (Indications & Evidence)",
+    host:"European Society of Cardiology (ESC)",
+    desc:"New ESC cardiac rehabilitation guidelines: indications, evidence and implementation. Listed on the ESC365 upcoming-webinars page (Wed 16 Sep 2026, 18:00 CEST).",
+    dates:["Wed Sep 16, 2026 · 9:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"general",
+    title:"NEW — ESC Webinar — New ESC Guidelines on Cardiac Rehabilitation (Core Components & Delivery)",
+    host:"European Society of Cardiology (ESC)",
+    desc:"New ESC cardiac rehabilitation guidelines: core components and delivery formats. Listed on the ESC365 upcoming-webinars page (Wed 23 Sep 2026, 18:00 CEST).",
+    dates:["Wed Sep 23, 2026 · 9:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"general",
+    title:"NEW — ESC Webinar — Amyloidosis: Clinical Trial Evidence in ATTR-CM",
+    host:"European Society of Cardiology (ESC)",
+    desc:"ESC amyloidosis series — clinical trial evidence across therapeutic classes in ATTR-CM. Listed on the ESC365 upcoming-webinars page (Mon 28 Sep 2026, 18:00 CEST).",
+    dates:["Mon Sep 28, 2026 · 9:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"general",
+    title:"NEW — ESC Webinar — Amyloidosis: Treatment Sequencing & Patient Selection in ATTR",
+    host:"European Society of Cardiology (ESC)",
+    desc:"ESC amyloidosis series — treatment sequencing and patient selection in the era of multiple ATTR therapies. Listed on the ESC365 upcoming-webinars page (Mon 5 Oct 2026, 18:00 CEST).",
+    dates:["Mon Oct 5, 2026 · 9:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"echo",
+    title:"ASE Echo Learning Hub",
+    host:"American Society of Echocardiography (ASE)",
+    desc:"On-demand echo teaching and module recordings — TTE, Doppler, strain, contrast, diastology.",
+    ondemand:"Watch anytime — recordings and modules on demand.",
+    access:"Free, open",
+    url:"https://www.asecho.org/practice-clinical-resources/journals/journal-club/"
+  },
+  {
+    topic:"structural",
+    title:"ASE Valve Disease & Structural Imaging",
+    host:"American Society of Echocardiography (ASE)",
+    desc:"Imaging for structural heart disease: TEE, 3D echo, valve assessment and imaging-based planning.",
+    ondemand:"Watch anytime — on-demand library plus periodic live webinars.",
+    access:"Free resource library",
+    url:"https://www.asecho.org/practice-clinical-resources/resource-library/valve-disease/"
+  },
+  {
+    topic:"ct",
+    title:"SCCT Webinar Series (recordings)",
+    host:"Society of Cardiovascular Computed Tomography (SCCT)",
+    desc:"On-demand cardiac CT teaching — coronary CTA, calcium scoring, CT-FFR and CT structural planning. Recorded physician & technologist webinars.",
+    ondemand:"Watch anytime — SCCT webinar archive (also see Meetings On Demand).",
+    access:"Free / member resources",
+    url:"https://scct.org/page/Webinars"
+  },
+  {
+    topic:"mri",
+    title:"SCMR Cases & CMR Case-Based Teaching",
+    host:"Society for Cardiovascular Magnetic Resonance (SCMR)",
+    desc:"Case-based CMR teaching: tissue characterization, mapping, viability, myocarditis and stress CMR.",
+    ondemand:"Watch anytime — case library and webinar recordings on the SCMR portal.",
+    access:"Free (guest login for some)",
+    url:"https://scmr.org/cases-of-scmr/"
+  },
+  {
+    topic:"prevention",
+    title:"NLA Lipid Library — Journal Club & The Lipid Panel",
+    host:"National Lipid Association (NLA)",
+    desc:"Free webinar library: the NLA Journal Club and The Lipid Panel monthly case discussions, plus CME activities on LDL-C, Lp(a) and ASCVD risk.",
+    ondemand:"Watch anytime — recurring free webinars and enduring CME on the NLA Lipid Library.",
+    access:"Free CME/CE",
+    url:"https://www.lipid.org/lipidlibrary"
+  },
+  {
+    topic:"ai",
+    title:"ESC Digital Health & AI in Cardiology",
+    host:"European Society of Cardiology (ESC)",
+    desc:"Machine learning applied to cardiology — imaging, ECG, risk prediction and workflow.",
+    ondemand:"Watch anytime — curated webinars and e-learning; live dates on the ESC calendar.",
+    access:"Free for ESC members (free tier available)",
+    url:"https://www.escardio.org/topics/digital-health-ai/"
+  },
+  {
+    topic:"cardioonc",
+    title:"Radcliffe Cardiology — Cardio-Oncology",
+    host:"Radcliffe Cardiology",
+    desc:"Expert webinars and broadcasts on cardiotoxicity and cancer-therapy cardiac effects.",
+    ondemand:"Watch anytime — free video library; new broadcasts added regularly.",
+    access:"Free with registration",
+    url:"https://www.radcliffecardiology.com/webinars"
+  },
+  {
+    topic:"earlycareer",
+    title:"ACC FIT / Early Career Webinars",
+    host:"American College of Cardiology (ACC)",
+    desc:"Series for fellows and early-career faculty: research careers, publishing, funding, finances and mentorship.",
+    ondemand:"Watch anytime — past webinars on demand; next live date on the ACC page.",
+    access:"Free, open registration",
+    url:"https://www.acc.org/Membership/Sections-and-Councils/Fellows-in-Training-Section/FIT-Early-Career-Webinar-Series"
+  },
+  {
+    topic:"general",
+    title:"ESC Webinars — General Cardiology",
+    host:"European Society of Cardiology (ESC)",
+    desc:"EACCME-accredited webinars across broad clinical cardiology, with on-demand replays on ESC 365.",
+    ondemand:"Watch anytime — replays on ESC 365; live dates on the ESC calendar.",
+    access:"Free for ESC members (free tier available)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"general",
+    title:"Radcliffe Cardiology — Broadcasts & Webinars",
+    host:"Radcliffe Cardiology",
+    desc:"Broad clinical cardiology broadcasts and live webinars across topics.",
+    ondemand:"Watch anytime — free video library; new broadcasts added regularly.",
+    access:"Free with registration",
+    url:"https://www.radcliffecardiology.com/broadcasts"
+  }
+];
+// ===== end data block =====
+
+// ---------- storage (per-browser; degrades gracefully on file://) ----------
+const PK="cwt.pins.v1", CK="cwt.custom.v1";
+let memPins=null, memCustom=null;          // in-memory fallback if localStorage is blocked
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(_){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); return true; }catch(_){ return false; } }
+function loadPins(){
+  const raw=lsGet(PK); if(raw!=null){ try{return JSON.parse(raw);}catch(_){} }
+  return memPins||[];
+}
+function savePins(p){ memPins=p; if(!lsSet(PK,JSON.stringify(p))){/*kept in memory*/} }
+function rawCustom(){
+  const raw=lsGet(CK); if(raw!=null){ try{return JSON.parse(raw);}catch(_){} }
+  return memCustom||[];
+}
+function saveCustom(a){ memCustom=a; lsSet(CK,JSON.stringify(a)); }
+
+// ---------- helpers ----------
+const MON={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+const WD=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function slug(s){ return String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// US Pacific offset (hours) for a given date: -7 during PDT, -8 during PST
+function laOffset(y,mIdx,d){
+  function nthSun(year,monthIdx,n){ let c=0; for(let day=1;day<=31;day++){ const dt=new Date(Date.UTC(year,monthIdx,day));
+    if(dt.getUTCMonth()!==monthIdx) break; if(dt.getUTCDay()===0){ c++; if(c===n) return day; } } return 1; }
+  const mar=Date.UTC(y,2,nthSun(y,2,2)), nov=Date.UTC(y,10,nthSun(y,10,1)), cur=Date.UTC(y,mIdx,d);
+  return (cur>=mar && cur<nov) ? -7 : -8;
+}
+function parseSession(str){
+  const parts=String(str).split("·");
+  const m=parts[0].match(/([A-Za-z]{3})\s+(\d{1,2}),\s+(\d{4})/);
+  if(!m) return null;
+  const info={year:+m[3], mon:MON[m[1]], day:+m[2], hour:null, min:0, hasTime:false};
+  const tm=(parts[1]||"").match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if(tm){ let h=(+tm[1])%12; if(/PM/i.test(tm[3])) h+=12; info.hour=h; info.min=+tm[2]; info.hasTime=true; }
+  return info;
+}
+function formatDisplay(i){
+  const wd=WD[new Date(Date.UTC(i.year,i.mon,i.day)).getUTCDay()];
+  let s=`${wd} ${MN[i.mon]} ${i.day}, ${i.year}`;
+  if(i.hasTime){ let h=i.hour%12; if(h===0)h=12; s+=` · ${h}:${String(i.min).padStart(2,'0')} ${i.hour<12?'AM':'PM'} PT`; }
+  return s;
+}
+function pad(n){ return String(n).padStart(2,'0'); }
+function toUTC(y,mo,d,h,mi){ const off=laOffset(y,mo,d); return new Date(Date.UTC(y,mo,d,h-off,mi)); }
+function fmtUTC(dt){ return dt.getUTCFullYear()+pad(dt.getUTCMonth()+1)+pad(dt.getUTCDate())+'T'+pad(dt.getUTCHours())+pad(dt.getUTCMinutes())+'00Z'; }
+function fmtDate(y,mo,d){ return ''+y+pad(mo+1)+pad(d); }
+function icsEsc(s){ return String(s).replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n'); }
+
+let calReg=[];   // calendar specs registered during a render
+function buildCal(title,details,url,i){
+  let startStr,endStr,allDay;
+  if(i.hasTime){
+    const s=toUTC(i.year,i.mon,i.day,i.hour,i.min), e2=new Date(s.getTime()+3600000);
+    startStr=fmtUTC(s); endStr=fmtUTC(e2); allDay=false;
+  } else {
+    startStr=fmtDate(i.year,i.mon,i.day);
+    const nd=new Date(Date.UTC(i.year,i.mon,i.day+1));
+    endStr=fmtDate(nd.getUTCFullYear(),nd.getUTCMonth(),nd.getUTCDate()); allDay=true;
+  }
+  const det=(details||'')+(url?('\n'+url):'');
+  const gcal='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(title)
+    +'&dates='+startStr+'/'+endStr+'&details='+encodeURIComponent(det);
+  const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//CardioWebinarsTracker//EN','CALSCALE:GREGORIAN','BEGIN:VEVENT',
+    'UID:'+slug(title)+'-'+startStr+'@cardio','DTSTAMP:'+fmtUTC(new Date())];
+  if(allDay){ lines.push('DTSTART;VALUE=DATE:'+startStr,'DTEND;VALUE=DATE:'+endStr); }
+  else { lines.push('DTSTART:'+startStr,'DTEND:'+endStr); }
+  lines.push('SUMMARY:'+icsEsc(title)); if(det) lines.push('DESCRIPTION:'+icsEsc(det)); if(url) lines.push('URL:'+url);
+  lines.push('END:VEVENT','END:VCALENDAR');
+  return {gcal, ics:lines.join('\r\n'), fname:(slug(title).slice(0,40)||'event')+'-'+startStr+'.ics'};
+}
+function calButtons(title,details,url,info){
+  if(!info) return '';
+  const idx=calReg.push(buildCal(title,details,url,info))-1;
+  return `<span class="cal">`
+    +`<a class="calbtn" href="${calReg[idx].gcal}" target="_blank" rel="noopener" title="Add to Google Calendar">＋Google</a>`
+    +`<button class="calbtn" type="button" data-ics="${idx}" title="Download .ics (Apple/Outlook)">＋iCal</button>`
+    +`</span>`;
+}
+function downloadICS(name,content){
+  const blob=new Blob([content],{type:'text/calendar;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+}
+
+// ---------- model ----------
+function customEvents(){
+  return rawCustom().map(c=>{
+    const [y,mo,d]=String(c.dateISO).split('-').map(Number);
+    const info={year:y,mon:(mo-1),day:d,hour:null,min:0,hasTime:false};
+    if(c.time){ const [hh,mm]=c.time.split(':').map(Number); info.hour=hh; info.min=mm||0; info.hasTime=true; }
+    return {...c, custom:true, _info:info, _display:formatDisplay(info)};
+  });
+}
+function buildWorking(){
+  const cur=EVENTS.map(e=>({...e, id:slug(e.title)}));
+  return cur.concat(customEvents());
+}
+function isSaved(e, pins){ return e.custom ? true : pins.includes(e.id); }
+
+// ---------- render ----------
+let active="all";
+const extIcon='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M9 7h8v8"/></svg>';
+document.getElementById("refresh").textContent="Last refreshed "+LAST_UPDATED+" · curated list updates automatically every week";
+
+function datesBlock(e){
+  let sessions=null;
+  if(e.custom){ sessions=[{display:e._display, info:e._info}]; }
+  else if(e.dates && e.dates.length){ sessions=e.dates.map(s=>({display:s, info:parseSession(s)})); }
+  if(sessions){
+    const items=sessions.map((s,i)=>
+      `<li class="${(!e.custom&&i===0)?'next':''}"><span class="dot">●</span>`
+      +`<span class="sess">${esc(s.display)}${(!e.custom&&i===0)?'<span class="tag">NEXT</span>':''}</span>`
+      +`${calButtons(e.title, (e.host?e.host+' — ':'')+(e.desc||''), e.url, s.info)}</li>`
+    ).join("");
+    return `<div class="dates"><div class="lbl">${e.custom?'When':'Upcoming sessions'}</div><ul>${items}</ul></div>`;
+  }
+  return `<div class="rolling"><b>On-demand.</b> ${esc(e.ondemand||'')}</div>`;
+}
+
+function renderFilters(working, pins){
+  const wrap=document.getElementById("filters"); wrap.innerHTML="";
+  const mineCount=working.filter(e=>isSaved(e,pins)).length;
+  const soonCount=working.filter(e=>withinDays(e,45)).length;
+  const chips=[{key:'soon',label:'⏱ Next 45 days'},{key:'mine',label:'★ My Dashboard'}].concat(TOPICS);
+  chips.forEach(t=>{
+    let n;
+    if(t.key==='soon') n=soonCount;
+    else if(t.key==='mine') n=mineCount;
+    else if(t.key==='all') n=working.length;
+    else n=working.filter(e=>e.topic===t.key).length;
+    const b=document.createElement("button");
+    b.textContent=`${t.label} (${n})`;
+    b.className=(t.key===active?'active ':'')+(t.key==='mine'?'mine':'')+(t.key==='soon'?'soon':'');
+    b.onclick=()=>{ active=t.key; render(); };
+    wrap.appendChild(b);
+  });
+}
+
+function isDated(e){ return !!(e.custom || (e.dates && e.dates.length)); }
+
+function sessionInfos(e){
+  if(e.custom && e._info) return [e._info];
+  if(e.dates && e.dates.length) return e.dates.map(parseSession).filter(Boolean);
+  return [];
+}
+function withinDays(e, days){
+  const now=new Date(); now.setHours(0,0,0,0);
+  const end=new Date(now); end.setDate(end.getDate()+days);
+  return sessionInfos(e).some(i=>{ const d=new Date(i.year,i.mon,i.day); return d>=now && d<=end; });
+}
+
+function cardHTML(e, pins){
+  const saved=isSaved(e,pins);
+  const dated=isDated(e);
+  const onDemand=!!e.ondemand && !dated;
+  const cls='card'+((saved&&!e.custom)?' saved':'')+(e.custom?' saved':'')+(e.verify?' unverified':'');
+  const starBtn=e.custom
+    ? `<button class="star del" data-del="${e.id}" title="Remove this event">✕</button>`
+    : `<button class="star" data-pin="${e.id}" title="${saved?'Remove from My Dashboard':'Save to My Dashboard'}">${saved?'★':'☆'}</button>`;
+  return `<div class="${cls}">`
+    +starBtn
+    +`<div class="topic-tag">${TOPIC_LABEL[e.topic]||e.topic}</div>`
+    +`<h3>${esc(e.title)}</h3>`
+    +`<p class="host">${esc(e.host||(e.custom?'Added by you':''))}</p>`
+    +(e.desc?`<p class="desc">${esc(e.desc)}</p>`:'')
+    +datesBlock(e)
+    +`<div class="badges">`
+      +(e.custom?'<span class="badge b-custom">ADDED BY YOU</span>':'<span class="badge b-free">FREE</span><span class="badge b-online">ONLINE</span>')
+      +(dated?'<span class="badge b-dated">DATED</span>':'')
+      +(e.verify?'<span class="badge b-verify">⚠ VERIFY</span>':'')
+      +(onDemand?'<span class="badge b-ondemand">ON-DEMAND</span>':'')
+    +`</div>`
+    +(e.access?`<p class="access">${esc(e.access)}</p>`:'')
+    +`<div class="spacer"></div>`
+    +(e.url?`<a class="reg" href="${e.url}" target="_blank" rel="noopener">Register / details ${extIcon}</a>`:'')
+    +`</div>`;
+}
+
+function renderGrid(working, pins){
+  calReg=[];
+  let list;
+  if(active==='soon') list=working.filter(e=>withinDays(e,45));
+  else if(active==='mine') list=working.filter(e=>isSaved(e,pins));
+  else if(active==='all') list=working;
+  else list=working.filter(e=>e.topic===active);
+  const live=list.filter(isDated);
+  const od=list.filter(e=>!isDated(e) && e.ondemand);
+  document.getElementById("count").textContent=
+    `${list.length} ${list.length===1?'listing':'listings'} · ${active==='soon'?'next 45 days (through ~Jul 14)':(active==='mine'?'My Dashboard':(active==='all'?'all topics':TOPIC_LABEL[active]))}`;
+  document.getElementById("gridLive").innerHTML=live.map(e=>cardHTML(e,pins)).join('');
+  document.getElementById("gridOd").innerHTML=od.map(e=>cardHTML(e,pins)).join('');
+  document.getElementById("liveCount").textContent='('+live.length+')';
+  document.getElementById("odCount").textContent='('+od.length+')';
+  document.getElementById("liveEmpty").style.display=live.length?'none':'block';
+  document.getElementById("odEmpty").style.display=od.length?'none':'block';
+}
+
+function render(){
+  const pins=loadPins(), working=buildWorking();
+  renderFilters(working, pins);
+  renderGrid(working, pins);
+}
+
+// ---------- interactions ----------
+document.querySelector(".wrap").addEventListener("click", ev=>{
+  const ics=ev.target.closest('[data-ics]');
+  if(ics){ const spec=calReg[+ics.dataset.ics]; if(spec) downloadICS(spec.fname, spec.ics); return; }
+  const pin=ev.target.closest('[data-pin]');
+  if(pin){ const id=pin.dataset.pin; const p=loadPins(); const i=p.indexOf(id);
+    if(i>=0) p.splice(i,1); else p.push(id); savePins(p); render(); return; }
+  const del=ev.target.closest('[data-del]');
+  if(del){ const id=del.dataset.del; if(confirm('Remove this event from your dashboard?')){
+    saveCustom(rawCustom().filter(c=>c.id!==id)); render(); } return; }
+});
+
+// modal
+const modal=document.getElementById("modal"), form=document.getElementById("evForm");
+const sel=document.getElementById("topicSelect");
+TOPICS.filter(t=>t.key!=='all').forEach(t=>{ const o=document.createElement("option"); o.value=t.key; o.textContent=t.label; sel.appendChild(o); });
+function openModal(){ form.reset(); sel.value='general'; modal.hidden=false; }
+function closeModal(){ modal.hidden=true; }
+document.getElementById("addBtn").onclick=openModal;
+document.getElementById("cancelBtn").onclick=closeModal;
+modal.addEventListener("click", e=>{ if(e.target===modal) closeModal(); });
+form.addEventListener("submit", e=>{
+  e.preventDefault();
+  const f=new FormData(form);
+  const obj={ id:'custom-'+Date.now().toString(36), topic:f.get('topic'),
+    title:(f.get('title')||'').trim(), host:(f.get('host')||'').trim(),
+    url:(f.get('url')||'').trim(), desc:(f.get('desc')||'').trim(),
+    dateISO:f.get('date'), time:f.get('time')||'' };
+  if(!obj.title || !obj.dateISO) return;
+  const arr=rawCustom(); arr.push(obj); saveCustom(arr);
+  closeModal(); active='mine'; render();
+});
+
+// export / import
+document.getElementById("exportBtn").onclick=()=>{
+  const data={ exported:new Date().toISOString(), pins:loadPins(), custom:rawCustom() };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='my-cardiology-dashboard.json'; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+};
+document.getElementById("importInput").addEventListener("change", e=>{
+  const file=e.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const data=JSON.parse(reader.result);
+      const curPins=loadPins(), curCustom=rawCustom();
+      const newPins=Array.from(new Set(curPins.concat(data.pins||[])));
+      const ids=new Set(curCustom.map(c=>c.id));
+      const mergedCustom=curCustom.concat((data.custom||[]).filter(c=>c && !ids.has(c.id)));
+      savePins(newPins); saveCustom(mergedCustom); active='mine'; render();
+      alert('Imported '+((data.pins||[]).length)+' saved + '+((data.custom||[]).length)+' added event(s).');
+    }catch(_){ alert('Sorry, that file could not be read as a dashboard export.'); }
+    e.target.value='';
+  };
+  reader.readAsText(file);
+});
+
+render();
+</script>
+</body>
+</html>
