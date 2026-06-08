@@ -170,7 +170,7 @@
 
 <script>
 // ===== Auto-refreshed data block (the weekly task rewrites EVENTS + LAST_UPDATED) =====
-const LAST_UPDATED = "June 1, 2026";  // refreshed
+const LAST_UPDATED = "June 8, 2026";  // refreshed
 
 const TOPICS = [
   {key:"all",question:"All topics"},
@@ -190,25 +190,6 @@ const TOPIC_LABEL = Object.fromEntries(TOPICS.map(t=>[t.key,t.label]));
 // Each event has EITHER dates:[...] (confirmed upcoming sessions, soonest first)
 // OR ondemand:"..." (watch-anytime resource). No vague "rolling" placeholders.
 const EVENTS = [
-  {
-    topic:"echo",
-    title:"ASE Journal Club on X — June",
-    host:"American Society of Echocardiography (ASE)",
-    desc:"Live JASE journal-club discussion of new echo literature — TTE, Doppler, strain, contrast, diastology — held on X (@ASE360).",
-    dates:["Tue Jun 2, 2026 · 5:00 PM PT"],
-    access:"Free, open (on X @ASE360)",
-    url:"https://www.asecho.org/event/ase-journal-club-echocardiographic/"
-  },
-  {
-    topic:"echo",
-    title:"NEW — ASE Webinar — Multimodality Imaging in Constrictive Pericarditis & Systemic Sclerosis",
-    host:"American Society of Echocardiography (ASE)",
-    desc:"Live ASE webinar on multimodality imaging (echo, cardiac MRI, CT) in constrictive pericarditis and cardiac involvement in systemic sclerosis (1 AMA PRA Cat 1, pending). Date confirmed on the ASE events calendar; price isn't shown on the event page and the Learning Hub sign-up won't render, so $0 is not confirmed.",
-    dates:["Thu Jun 4, 2026 · 9:00 AM PT"],
-    access:"Price not confirmed — verify $0 at ASE sign-up",
-    verify:true,
-    url:"https://www.asecho.org/event/multimodality-imaging-in-constrictive-pericarditis-and-systemic-sclerosis/"
-  },
   {
     topic:"earlycareer",
     title:"ASE / EACVI Webinar — Breaking the Echo Ceiling",
@@ -262,7 +243,7 @@ const EVENTS = [
     desc:"ASPC live webinar on identifying and managing familial hypercholesterolemia to prevent early CVD.",
     dates:["Tue Jun 23, 2026 · 3:00 PM PT"],
     access:"Free, registration",
-    url:"https://www.aspconline.org/events-center"
+    url:"https://www.aspconline.org/familial-hypercholesterolemia-and-early-cvd-prevention"
   },
   {
     topic:"prevention",
@@ -279,42 +260,6 @@ const EVENTS = [
     host:"European Society of Cardiology (ESC)",
     desc:"Lipid-lowering treatment in ASCVD with and without prior ischaemic events; emerging evidence and ongoing trials.",
     dates:["Tue Sep 15, 2026 · 9:00 AM PT"],
-    access:"Free to attend live (ESC account)",
-    url:"https://esc365.escardio.org/events/upcoming-webinars/"
-  },
-  {
-    topic:"general",
-    title:"ESC/ACVC — BEYOND ROSC: Mastering Post-Cardiac Arrest Care (Ep 3)",
-    host:"European Society of Cardiology (ACVC)",
-    desc:"Acute cardiovascular care series on post-cardiac-arrest management.",
-    dates:["Mon Jun 1, 2026 · time TBA"],
-    access:"Free to attend live (ESC account)",
-    url:"https://esc365.escardio.org/events/upcoming-webinars/"
-  },
-  {
-    topic:"general",
-    title:"ESC/HFA — Early Identification of Heart Failure in Diabetic Populations",
-    host:"European Society of Cardiology (HFA)",
-    desc:"Detecting heart failure early in patients with diabetes.",
-    dates:["Tue Jun 2, 2026 · 9:00 AM PT"],
-    access:"Free to attend live (ESC account)",
-    url:"https://esc365.escardio.org/events/upcoming-webinars/"
-  },
-  {
-    topic:"general",
-    title:"ESC/EAPCI Journal Club — STORM-PE",
-    host:"European Society of Cardiology (EAPCI)",
-    desc:"Journal club on the STORM-PE trial (pulmonary embolism intervention).",
-    dates:["Thu Jun 4, 2026 · 9:00 AM PT"],
-    access:"Free to attend live (ESC account)",
-    url:"https://esc365.escardio.org/events/upcoming-webinars/"
-  },
-  {
-    topic:"general",
-    title:"ESC/EAPCI — From Trials to Guidelines in Structural Heart Disease",
-    host:"European Society of Cardiology (EAPCI)",
-    desc:"Translating structural heart disease evidence into daily practice and managing capacity.",
-    dates:["Fri Jun 5, 2026 · 9:00 AM PT"],
     access:"Free to attend live (ESC account)",
     url:"https://esc365.escardio.org/events/upcoming-webinars/"
   },
