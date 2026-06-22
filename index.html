@@ -170,7 +170,7 @@
 
 <script>
 // ===== Auto-refreshed data block (the weekly task rewrites EVENTS + LAST_UPDATED) =====
-const LAST_UPDATED = "June 8, 2026";  // refreshed
+const LAST_UPDATED = "June 22, 2026";  // refreshed
 
 const TOPICS = [
   {key:"all",question:"All topics"},
@@ -191,119 +191,19 @@ const TOPIC_LABEL = Object.fromEntries(TOPICS.map(t=>[t.key,t.label]));
 // OR ondemand:"..." (watch-anytime resource). No vague "rolling" placeholders.
 const EVENTS = [
   {
-    topic:"earlycareer",
-    title:"ASE / EACVI Webinar — Breaking the Echo Ceiling",
-    host:"American Society of Echocardiography (ASE) with EACVI",
-    desc:"Promoting professional empowerment in echocardiography; developed with EACVI. Free — confirmed on the ASE Learning Hub.",
-    dates:["Fri Jun 12, 2026 · 12:00 PM PT"],
-    access:"Free",
-    url:"https://aselearninghub.org/topclass/topclass.do?expand-OfferingDetails-Offeringid=22312290"
-  },
-  {
-    topic:"echo",
-    title:"ASE Guidelines in Practice — Ultrasound Artifacts",
-    host:"American Society of Echocardiography (ASE)",
-    desc:"Webinar on ASE's new cardiac ultrasound artifacts guideline (1 CME, Lantheus-supported). Date confirmed on the ASE event page; price isn't shown there and the Learning Hub sign-up page won't render — so the price is unconfirmed (not assumed free).",
-    dates:["Tue Jul 14, 2026 · 3:00 PM PT"],
-    access:"Price not confirmed — verify $0 at ASE sign-up",
-    verify:true,
-    url:"https://aselearninghub.org/topclass/topclass.do?expand-OfferingDetails-Offeringid=21689619"
-  },
-  {
-    topic:"ct",
-    title:"ESC Webinar — Imaging Subclinical Coronary Atherosclerosis & Lipid-Lowering",
-    host:"European Society of Cardiology (ESC)",
-    desc:"Imaging subclinical coronary atherosclerosis (coronary CT) and its implications for intensive lipid-lowering therapy.",
-    dates:["Tue Jun 9, 2026 · 9:00 AM PT"],
-    access:"Free to attend live (ESC account)",
-    url:"https://esc365.escardio.org/events/upcoming-webinars/"
-  },
-  {
-    topic:"structural",
-    title:"ESC / EACVI Webinar — Tricuspid Regurgitation: Diagnosis to Transcatheter Treatment",
-    host:"European Society of Cardiology (EACVI)",
-    desc:"Imaging-based diagnosis through transcatheter treatment of tricuspid regurgitation, in light of the 2025 ESC Valvular Heart Disease guidelines.",
-    dates:["Wed Jun 10, 2026 · 9:00 AM PT"],
-    access:"Free to attend live (ESC account)",
-    url:"https://esc365.escardio.org/events/upcoming-webinars/"
-  },
-  {
-    topic:"prevention",
-    title:"ESC Webinar — Prediction & Prevention of Diabetes CV Complications",
-    host:"European Society of Cardiology (ESC)",
-    desc:"What's new in predicting and preventing cardiovascular complications in diabetes.",
-    dates:["Thu Jun 18, 2026 · 7:00 AM PT"],
-    access:"Free to attend live (ESC account)",
-    url:"https://esc365.escardio.org/events/upcoming-webinars/"
-  },
-  {
     topic:"prevention",
     title:"Familial Hypercholesterolemia & Early CVD Prevention",
     host:"American Society for Preventive Cardiology (ASPC)",
-    desc:"ASPC live webinar on identifying and managing familial hypercholesterolemia to prevent early CVD.",
+    desc:"ASPC CardioCore live webinar on identifying and managing familial hypercholesterolemia to prevent early CVD. Date & time confirmed on the ASPC events page (6:00–7:00 PM EDT, Jun 23, 2026).",
     dates:["Tue Jun 23, 2026 · 3:00 PM PT"],
     access:"Free, registration",
     url:"https://www.aspconline.org/familial-hypercholesterolemia-and-early-cvd-prevention"
   },
   {
-    topic:"prevention",
-    title:"ESC Webinar — Cardio-Rheumatology: An Unmet Need in CVD Prevention",
-    host:"European Society of Cardiology (ESC)",
-    desc:"Why cardio-rheumatology matters for cardiovascular risk and prevention in patients with inflammatory rheumatic disease.",
-    dates:["Wed Jun 24, 2026 · 9:00 AM PT"],
-    access:"Free to attend live (ESC account)",
-    url:"https://esc365.escardio.org/events/upcoming-webinars/"
-  },
-  {
-    topic:"prevention",
-    title:"ESC Webinar — Lipid-Lowering in ASCVD",
-    host:"European Society of Cardiology (ESC)",
-    desc:"Lipid-lowering treatment in ASCVD with and without prior ischaemic events; emerging evidence and ongoing trials.",
-    dates:["Tue Sep 15, 2026 · 9:00 AM PT"],
-    access:"Free to attend live (ESC account)",
-    url:"https://esc365.escardio.org/events/upcoming-webinars/"
-  },
-  {
-    topic:"general",
-    title:"ESC/EAPCI — Valvular Heart Disease: Life-Time Management",
-    host:"European Society of Cardiology (EAPCI)",
-    desc:"Balancing durability and repeat intervention in valvular heart disease.",
-    dates:["Tue Jun 16, 2026 · 9:00 AM PT"],
-    access:"Free to attend live (ESC account)",
-    url:"https://esc365.escardio.org/events/upcoming-webinars/"
-  },
-  {
-    topic:"general",
-    title:"ESC — What Is Cardio-Rheumatology?",
-    host:"European Society of Cardiology (ESC)",
-    desc:"Introduction to cardio-rheumatology and CV risk in inflammatory disease.",
-    dates:["Wed Jun 17, 2026 · 9:00 AM PT"],
-    access:"Free to attend live (ESC account)",
-    url:"https://esc365.escardio.org/events/upcoming-webinars/"
-  },
-  {
-    topic:"general",
-    title:"ESC/HFA Journal Club — HF Hospitalisation as an Endpoint",
-    host:"European Society of Cardiology (HFA)",
-    desc:"Is heart-failure hospitalisation the right trial endpoint?",
-    dates:["Thu Jun 18, 2026 · 9:00 AM PT"],
-    access:"Free to attend live (ESC account)",
-    url:"https://esc365.escardio.org/events/upcoming-webinars/"
-  },
-  {
-    topic:"general",
-    title:"ESC — New Levels of Evidence for ESC Guidelines",
-    host:"European Society of Cardiology (ESC)",
-    desc:"What changed in ESC guideline levels of evidence and why it matters.",
-    dates:["Fri Jun 19, 2026 · 9:00 AM PT"],
-    access:"Free to attend live (ESC account)",
-    url:"https://esc365.escardio.org/events/upcoming-webinars/"
-  },
-  {
     topic:"general",
     title:"ESC/EHRA — Surgical LAA Exclusion in AF",
     host:"European Society of Cardiology (EHRA)",
-    desc:"Guideline-supported left atrial appendage exclusion for AF patients.",
+    desc:"Guideline-supported left atrial appendage exclusion for AF patients. Listed on the ESC365 upcoming-webinars page (Tue 23 Jun 2026, 18:00 CEST).",
     dates:["Tue Jun 23, 2026 · 9:00 AM PT"],
     access:"Free to attend live (ESC account)",
     url:"https://esc365.escardio.org/events/upcoming-webinars/"
@@ -312,8 +212,17 @@ const EVENTS = [
     topic:"earlycareer",
     title:"ESC/ACNAP — Conducting Literature Reviews",
     host:"European Society of Cardiology (ACNAP)",
-    desc:"Research-skills webinar on conducting literature reviews.",
+    desc:"Research-skills webinar on conducting literature reviews. Listed on the ESC365 upcoming-webinars page (Wed 24 Jun 2026, 16:00 CEST).",
     dates:["Wed Jun 24, 2026 · 7:00 AM PT"],
+    access:"Free to attend live (ESC account)",
+    url:"https://esc365.escardio.org/events/upcoming-webinars/"
+  },
+  {
+    topic:"prevention",
+    title:"ESC Webinar — Cardio-Rheumatology: An Unmet Need in CVD Prevention",
+    host:"European Society of Cardiology (ESC)",
+    desc:"Why cardio-rheumatology matters for cardiovascular risk and prevention in patients with inflammatory rheumatic disease. Listed on the ESC365 upcoming-webinars page (Wed 24 Jun 2026, 18:00 CEST).",
+    dates:["Wed Jun 24, 2026 · 9:00 AM PT"],
     access:"Free to attend live (ESC account)",
     url:"https://esc365.escardio.org/events/upcoming-webinars/"
   },
@@ -321,16 +230,26 @@ const EVENTS = [
     topic:"general",
     title:"ESC/EAPCI — Early Access to Innovation in Structural Heart Disease",
     host:"European Society of Cardiology (EAPCI)",
-    desc:"Delivering early patient access to structural heart disease innovation.",
+    desc:"Delivering early patient access to structural heart disease innovation. Listed on the ESC365 upcoming-webinars page (Wed 1 Jul 2026, 18:00 CEST).",
     dates:["Wed Jul 1, 2026 · 9:00 AM PT"],
     access:"Free to attend live (ESC account)",
     url:"https://esc365.escardio.org/events/upcoming-webinars/"
   },
   {
+    topic:"echo",
+    title:"ASE Guidelines in Practice — Ultrasound Artifacts",
+    host:"American Society of Echocardiography (ASE)",
+    desc:"Webinar on ASE's new cardiac ultrasound artifacts guideline (1 CME, Lantheus-supported). Date & time confirmed via ASE (Jul 14, 6:00 PM ET); price isn't shown on the event page and the Learning Hub sign-up page won't render — so the price is unconfirmed (not assumed free).",
+    dates:["Tue Jul 14, 2026 · 3:00 PM PT"],
+    access:"Price not confirmed — verify $0 at ASE sign-up",
+    verify:true,
+    url:"https://aselearninghub.org/topclass/topclass.do?expand-OfferingDetails-Offeringid=21689619"
+  },
+  {
     topic:"general",
     title:"ESC — 2024 ESC Guidelines on AF: AF-CARE Pathway",
     host:"European Society of Cardiology (ESC)",
-    desc:"The AF-CARE pathway — the new paradigm for atrial fibrillation treatment.",
+    desc:"The AF-CARE pathway — the new paradigm for atrial fibrillation treatment. Listed on the ESC365 upcoming-webinars page (Wed 22 Jul 2026, 18:00 CEST).",
     dates:["Wed Jul 22, 2026 · 9:00 AM PT"],
     access:"Free to attend live (ESC account)",
     url:"https://esc365.escardio.org/events/upcoming-webinars/"
@@ -339,47 +258,19 @@ const EVENTS = [
     topic:"general",
     title:"ESC — Anticoagulation in AF: Implementing the 2024 Guidelines",
     host:"European Society of Cardiology (ESC)",
-    desc:"Putting the 2024 ESC AF anticoagulation guidance into clinical practice.",
+    desc:"Putting the 2024 ESC AF anticoagulation guidance into clinical practice. Listed on the ESC365 upcoming-webinars page (Wed 29 Jul 2026, 18:00 CEST).",
     dates:["Wed Jul 29, 2026 · 9:00 AM PT"],
     access:"Free to attend live (ESC account)",
     url:"https://esc365.escardio.org/events/upcoming-webinars/"
   },
   {
-    topic:"structural",
-    title:"Tricuspid TEER — Anatomy-Driven Planning & Execution",
-    host:"Radcliffe Cardiology (Structural Heart Academy APAC)",
-    desc:"Echo-guided tricuspid TEER: tricuspid valve anatomy, multimodality imaging (TEE/ICE/CT) for planning and intraprocedural guidance, real-world cases. APAC-timed broadcast (18:00 JST). Confirmed live on the Radcliffe webinar page.",
-    dates:["Wed Jun 10, 2026 · 2:00 AM PT (18:00 JST)"],
-    access:"Free with registration (sponsored)",
-    url:"https://www.radcliffecardiology.com/webinars/tricuspid-teer-anatomy-driven-planning-and-execution"
-  },
-  {
-    topic:"ct",
-    title:"SCCT Webinar — Scaling Cardiac CT",
-    host:"Society of Cardiovascular Computed Tomography (SCCT)",
-    desc:"Sponsored webinar — building a high-volume cardiac CT service without losing quality. Date confirmed (June 17, 2026); the SCCT event page is JS-rendered, so confirm the start time there.",
-    dates:["Wed Jun 17, 2026 · time TBA"],
-    access:"Free sponsored webinar (time on SCCT page)",
-    url:"https://scct.org/events/EventDetails.aspx?id=2060472"
-  },
-  {
     topic:"general",
-    title:"ESC/ACNAP — From Heart to Mind: PPI in Preventing Cognitive Impairment in CVD",
-    host:"European Society of Cardiology (ACNAP)",
-    desc:"How public and patient involvement (PPI) supports research to prevent cognitive impairment in cardiovascular disease. Listed on the ESC365 upcoming-webinars page (Mon 8 Jun 2026, 15:00 CEST).",
-    dates:["Mon Jun 8, 2026 · 6:00 AM PT"],
+    title:"ESC Webinar — Amyloidosis: From Protein Misfolding to Therapy in ATTR",
+    host:"European Society of Cardiology (ESC)",
+    desc:"ESC amyloidosis series — stabilizers, silencers, antibodies and gene editing in ATTR. Listed on the ESC365 upcoming-webinars page (Mon 7 Sep 2026, 18:00 CEST).",
+    dates:["Mon Sep 7, 2026 · 9:00 AM PT"],
     access:"Free to attend live (ESC account)",
     url:"https://esc365.escardio.org/events/upcoming-webinars/"
-  },
-  {
-    topic:"general",
-    title:"Optimising Cath Lab Management to Scale TAVI",
-    host:"Radcliffe Cardiology",
-    desc:"Live webinar (Edwards-supported) on cath-lab efficiency, workflow design, patient prioritisation and scheduling to scale TAVI. Date confirmed on the Radcliffe webinar page; the page lists both 18:00 CET and 18:00 BST, so the exact start time should be confirmed.",
-    dates:["Tue Jun 9, 2026 · 10:00 AM PT (18:00 BST)"],
-    access:"Free with registration (sponsored)",
-    verify:true,
-    url:"https://www.radcliffecardiology.com/webinars/optimising-cath-lab-management-scale-tavi"
   },
   {
     topic:"prevention",
@@ -392,11 +283,11 @@ const EVENTS = [
     url:"https://www.aspconline.org/events-center"
   },
   {
-    topic:"general",
-    title:"ESC Webinar — Amyloidosis: From Protein Misfolding to Therapy in ATTR",
+    topic:"prevention",
+    title:"ESC Webinar — Lipid-Lowering in ASCVD",
     host:"European Society of Cardiology (ESC)",
-    desc:"ESC amyloidosis series — stabilizers, silencers, antibodies and gene editing in ATTR. Listed on the ESC365 upcoming-webinars page (Mon 7 Sep 2026, 18:00 CEST).",
-    dates:["Mon Sep 7, 2026 · 9:00 AM PT"],
+    desc:"Lipid-lowering treatment in ASCVD with and without prior ischaemic events; emerging evidence and ongoing trials. Listed on the ESC365 upcoming-webinars page (Tue 15 Sep 2026, 18:00 CEST).",
+    dates:["Tue Sep 15, 2026 · 9:00 AM PT"],
     access:"Free to attend live (ESC account)",
     url:"https://esc365.escardio.org/events/upcoming-webinars/"
   },
